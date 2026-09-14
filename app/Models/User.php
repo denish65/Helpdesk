@@ -22,7 +22,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasRoles, HasFactory, Notifiable, HasApiTokens;
 
-    protected $fillable = ["phone","avatar","name","email","password"];
+    protected $fillable = ["first_name","last_name","username","name","phone","avatar","name","email","password"];
 
 
 
@@ -38,5 +38,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+
+    protected function tenent()
+    {
+        return $this->belongsTo(TenantsModel::class);
     }
 }

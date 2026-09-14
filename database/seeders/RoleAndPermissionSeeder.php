@@ -15,7 +15,7 @@ class RoleAndPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+      app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
       $permissions = [
         'tickets.view',
@@ -28,27 +28,36 @@ class RoleAndPermissionSeeder extends Seeder
       ];
 
 
-      foreach($permissions as $permission){
-        Permission::findOrCreate($permission, 'api');
+      foreach(['web','api'] as $guard){
+
+        foreach($permissions as $permission){
+            Permission::findOrCreate($permission, $guard);
+        }
+
+        $adminRole = Role::findOrCreate('admin', $guard);
+
+        $adminRole->syncPermissions(
+            Permission::where("guard_name",$guard)->get()
+        );
+
+
+        $agentRole = Role::findOrCreate('agent', $guard);
+
+        $agentRole->syncPermissions([
+            Permission::findByName('tickets.view',$guard),
+            Permission::findByName('tickets.create',$guard),
+            Permission::findByName('tickets.update',$guard),
+            Permission::findByName('tickets.assign',$guard),
+        ]);
+
+        $customerRole = Role::findOrCreate('customer',$guard);
+        $customerRole->syncPermissions([
+            Permission::findByName('tickets.view',$guard),
+            Permission::findByName('tickets.create',$guard),
+        ]);
       }
 
-      $adminRole = Role::findOrCreate('admin', 'api');
-      $adminRole->syncPermissions(Permission::all());
-
-
-      $agentRole = Role::findOrCreate('agent', 'api');
-      $agentRole->syncPermissions([
-        'tickets.view',
-        'tickets.create',
-        'tickets.update',
-        'tickets.assign',
-      ]);
-
-      $customerRole = Role::findOrCreate('customer','api');
-      $customerRole->syncPermissions([
-        'tickets.view',
-        'tickets.create',
-      ]);
+      app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     }
 }

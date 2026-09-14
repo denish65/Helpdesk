@@ -51,20 +51,20 @@ class AuthController extends Controller
     public function apiRegister(Request $request)
     {
        $request->validate([
-        "first_name"=>"required",
-        "last_name"=>"required",
-        "username"=>"required|unique:users,username",
-        'phone'=>"required",
-        'email'=>"require|email|unique:users,email",
-        "password"=>"required|min:8",
-        "password_confirmation"=>"required"
+            "first_name"               =>"required",
+            "last_name"                =>"required",
+            "username"                 =>"required|unique:users,username",
+            'phone'                    =>"required",
+            'email'                    =>"required|email|unique:users,email",
+            "password"                 =>"required|min:8",
+            "password_confirmation"    =>"required",
         ]);
 
-        User::create($request->only(["first_name","last_name","username",'phone',"name","email","password"]));
+        $user =User::create($request->only(["first_name","last_name","username",'phone',"name","email","password"]));
 
         $data["status"]  =  true;
         $data['message'] = "register successfully";
-        $data['id'] = $uesr->id;
+        $data['id']      = $user->id;
 
         return response()->json($data, 200);
 

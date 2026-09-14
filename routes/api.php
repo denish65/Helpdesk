@@ -15,7 +15,7 @@ Route::post("register",[AuthController::class,"apiRegister"]);
 Route::post("login",[AuthController::class,"apiLogin"]);
 
 
-Route::middleware("auth:sanctum")->group(function(){
+Route::prefix("v1")->middleware("auth:sanctum")->group(function(){
 
 Route::get("index",[AuthController::class,"index"]);
 
